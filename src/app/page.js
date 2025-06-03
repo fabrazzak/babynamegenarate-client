@@ -44,7 +44,7 @@ const HomePage = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await axios.get('http://localhost:5000/names');
+      const { data } = await axios.get('https://babynamegenarate.vercel.app/names');
       if (!data || !data.length) throw new Error('No names found');
       const randomName = data[Math.floor(Math.random() * data.length)];
       setName(randomName);
