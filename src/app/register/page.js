@@ -32,7 +32,7 @@ const RegisterPage = () => {
 
   const saveUserToDatabase = async (name, email) => {
     try {
-      await axios.post('http://localhost:5000/users', { name, email });
+      await axios.post('https://babynamegenarate.vercel.app/users', { name, email });
     } catch (err) {
       console.error("User save failed", err);
     }

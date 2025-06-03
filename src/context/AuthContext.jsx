@@ -67,7 +67,7 @@ const AuthProvider = ({ children }) => {
   if (user?.email) {
     const fetchSingleUser = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/users/email/${user?.email}`);
+        const res = await axios.get(`https://babynamegenarate.vercel.app/users/email/${user?.email}`);
         setRole(res?.data.role);
       } catch (err) {
         console.error('Error fetching user:', err);

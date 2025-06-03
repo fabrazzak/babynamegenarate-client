@@ -23,7 +23,7 @@ const Login = () => {
 
     const saveUserToDatabase = async (name, email) => {
         try {
-            await axios.post('http://localhost:5000/users', { name, email });
+            await axios.post('https://babynamegenarate.vercel.app/users', { name, email });
         } catch (err) {
             console.error("User save failed", err);
         }
@@ -84,11 +84,11 @@ const Login = () => {
                             <ErrorMessage name="password" component="div" className="text-red-500 text-sm mt-1" />
                         </div>
 
-                        <div className="text-right text-sm">
+                        {/* <div className="text-right text-sm">
                             <Link href="/forgot-password" className="text-blue-600 hover:underline">
                                 Forgot password?
                             </Link>
-                        </div>
+                        </div> */}
 
                         <button
                             type="submit"

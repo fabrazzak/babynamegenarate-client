@@ -23,7 +23,7 @@ const DashBoardPage = () => {
 
   const fetchNames = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/names');
+      const res = await axios.get('https://babynamegenarate.vercel.app/names');
       setNames(res.data);
     } catch (err) {
       console.error('Error fetching names:', err);
@@ -33,7 +33,7 @@ const DashBoardPage = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/users');
+      const res = await axios.get('https://babynamegenarate.vercel.app/users');
       setUsers(res.data);
     } catch (err) {
       console.error('Error fetching users:', err);
@@ -75,7 +75,7 @@ const DashBoardPage = () => {
 
     if (confirmName === name) {
       try {
-        await axios.delete(`http://localhost:5000/names/${id}`);
+        await axios.delete(`https://babynamegenarate.vercel.app/names/${id}`);
         setNames((prev) => prev.filter((item) => item._id !== id));
         MySwal.fire('Deleted!', 'The name has been deleted.', 'success');
       } catch (err) {
@@ -98,7 +98,7 @@ const DashBoardPage = () => {
 
     if (isConfirmed) {
       try {
-        await axios.put(`http://localhost:5000/users/make-admin/${id}`);
+        await axios.put(`https://babynamegenarate.vercel.app/users/make-admin/${id}`);
         MySwal.fire('Success!', 'User role updated to admin', 'success');
         fetchUsers();
       } catch (err) {
@@ -121,7 +121,7 @@ const DashBoardPage = () => {
 
     if (isConfirmed) {
       try {
-        await axios.put(`http://localhost:5000/users/remove-admin/${id}`);
+        await axios.put(`https://babynamegenarate.vercel.app/users/remove-admin/${id}`);
         MySwal.fire('Success!', 'Admin role removed', 'success');
         fetchUsers();
       } catch (err) {
@@ -163,7 +163,7 @@ const DashBoardPage = () => {
     }),
     onSubmit: async (values, { resetForm }) => {
       try {
-        await axios.post('http://localhost:5000/names', values);
+        await axios.post('https://babynamegenarate.vercel.app/names', values);
         MySwal.fire('Success!', 'Name added successfully!', 'success');
         resetForm();
       } catch (error) {
@@ -188,7 +188,7 @@ const DashBoardPage = () => {
     }),
     onSubmit: async (values) => {
       try {
-        await axios.put(`http://localhost:5000/names/${currentName._id}`, values);
+        await axios.put(`https://babynamegenarate.vercel.app/names/${currentName._id}`, values);
         MySwal.fire('Success!', 'Name updated successfully!', 'success');
         fetchNames();
         closeUpdateModal();
