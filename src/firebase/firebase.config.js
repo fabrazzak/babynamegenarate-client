@@ -6,14 +6,18 @@ import { getAuth, GoogleAuthProvider} from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAv7bAmYwngn6wYuoRsWUKFGUB7B-MffYo",
-  authDomain: "babynamegenarate.firebaseapp.com",
-  projectId: "babynamegenarate",
-  storageBucket: "babynamegenarate.firebasestorage.app",
-  messagingSenderId: "1000349285751",
-  appId: "1:1000349285751:web:379fbdfb53745d9a85f572"
+apiKey: "AIzaSyC4F14n0jBxi56XcugLJWnefHi3-gNI-_c",
+authDomain: "babynameblessing-7f047.firebaseapp.com",
+projectId: "babynameblessing-7f047",
+storageBucket: "babynameblessing-7f047.firebasestorage.app",
+messagingSenderId: "139445184927",
+appId: "1:139445184927:web:865a53e2edf0f34a9bf5aa"
 };
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+
+
+
+
