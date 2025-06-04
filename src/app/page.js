@@ -170,7 +170,6 @@ const HomePage = () => {
         >
           <p className="text-gray-500 text-sm mb-2">Advertisement</p>
           <AdBanner></AdBanner>
-
         </motion.div>
       </div>
     </div>

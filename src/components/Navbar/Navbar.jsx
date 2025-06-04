@@ -96,6 +96,23 @@ export default function Navbar() {
             {link.label}
           </Link>
         ))}
+         {(user && !loading && role === 'admin') && 
+            <Link
+             
+              href='/dashboard'
+              className={`relative text-lg font-medium text-gray-600 hover:text-blue-600 transition duration-300 ${
+                pathname === 'dashboard' ? 'text-blue-600 font-semibold' : ''
+              }`}
+            >
+              Dashboard
+              {pathname === '/dashboard' && (
+                <span className="block h-0.5 bg-blue-600 absolute -bottom-1 left-0 w-full"></span>
+              )}
+            </Link>         
+
+
+
+          }
       </div>
     </nav>
   )
