@@ -7,6 +7,7 @@ import Footer from "@/components/Footer/Footer";
 import AuthProvider from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,14 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
+      <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7987554086610229"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${loading ? "overflow-hidden" : ""
           }`}

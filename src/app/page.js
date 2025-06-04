@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
+import AdBanner from '@/components/AdBanner/AdBanner';
 
 
 const LoadingSpinner = () => (
@@ -34,7 +35,7 @@ const cardMotion = {
 };
 
 const HomePage = () => {
-  
+
 
   const [name, setName] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -58,6 +59,11 @@ const HomePage = () => {
   useEffect(() => {
     fetchRandomName();
   }, [fetchRandomName]);
+
+  
+
+
+
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-purple-50 px-4 flex items-center justify-center md:min-h-screen relative overflow-hidden">
@@ -156,8 +162,15 @@ const HomePage = () => {
           </motion.button>
         </motion.div>
 
-        <motion.div {...fadeIn} transition={{ delay: 0.6 }} className="mt-12 p-4 bg-gray-100 rounded-lg">
-          <p className="text-gray-500 text-sm">Advertisement</p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mt-12 p-4 bg-gray-100 rounded-lg"
+        >
+          <p className="text-gray-500 text-sm mb-2">Advertisement</p>
+          <AdBanner></AdBanner>
+
         </motion.div>
       </div>
     </div>

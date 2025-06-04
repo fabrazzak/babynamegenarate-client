@@ -20,13 +20,13 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white shadow sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-5 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4  flex justify-between items-center">
         {/* Logo */}
         <Link
           href="/"
           className="md:text-3xl text-2xl font-extrabold text-blue-600 tracking-tight"
         >
-          BabyName<span className="text-purple-600">Blessing</span>
+          <img src='/1.png' alt='logo' className='w-20 py-2'></img>
         </Link>
 
         {/* Desktop Menu */}

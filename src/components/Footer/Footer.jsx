@@ -10,7 +10,8 @@ export default function Footer() {
           
           {/* Left Section */}
           <div>
-            <h3 className="text-2xl font-bold text-blue-500">BabyNameBlessing</h3>
+            {/* <h3 className="text-2xl font-bold text-blue-500">BabyNameBlessing</h3> */}
+            <img src="/1.png" alt="logo" className="w-20 rounded mb-4 bg-white" />
             <p className="text-gray-400 mt-2 max-w-sm">
               Finding meaningful names for your blessing with love and culture.
             </p>
