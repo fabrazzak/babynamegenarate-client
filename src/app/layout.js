@@ -20,19 +20,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// ✅ Recommended: Use this for global <head> script
-export function Head() {
-  return (
-    <>
-      <meta name="google-adsense-account" content="ca-pub-7987554086610229" />
-      <script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7987554086610229"
-        crossOrigin="anonymous"
-      ></script>
-    </>
-  );
-}
+
 export default function RootLayout({ children }) {
   const [loading, setLoading] = useState(true);
 
@@ -58,6 +46,12 @@ export default function RootLayout({ children }) {
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7987554086610229"
           crossOrigin="anonymous"></script>
       </head> */}
+       <meta name="google-adsense-account" content="ca-pub-7987554086610229" />
+      <script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7987554086610229"
+        crossOrigin="anonymous"
+      ></script>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${loading ? "overflow-hidden" : ""
           }`}
