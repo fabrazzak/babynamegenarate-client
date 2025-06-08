@@ -47,6 +47,7 @@ export default function RootLayout({ children }) {
           crossOrigin="anonymous"></script>
       </head> */}
        <meta name="google-adsense-account" content="ca-pub-7987554086610229" />
+       <meta name="verification" content="61259d63f598a99a2e7564119028dca3" />
       <script
         async
         src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7987554086610229"
