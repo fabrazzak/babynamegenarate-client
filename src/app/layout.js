@@ -20,7 +20,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-
+// ✅ Recommended: Use this for global <head> script
+export function Head() {
+  return (
+    <>
+      <meta name="google-adsense-account" content="ca-pub-7987554086610229" />
+      <script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7987554086610229"
+        crossOrigin="anonymous"
+      ></script>
+    </>
+  );
+}
 export default function RootLayout({ children }) {
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +45,7 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-     <Head>
+      {/* <Head>
         <meta name="google-adsense-account" content="ca-pub-7987554086610229" />
         <script
           async
@@ -41,6 +53,11 @@ export default function RootLayout({ children }) {
           crossOrigin="anonymous"
         ></script>
       </Head>
+      <head>
+        <meta name="google-adsense-account" content="ca-pub-7987554086610229" />
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7987554086610229"
+          crossOrigin="anonymous"></script>
+      </head> */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${loading ? "overflow-hidden" : ""
           }`}
@@ -57,7 +74,7 @@ export default function RootLayout({ children }) {
           </motion.div>
         ) : (
           <>
-           
+
             <AuthProvider>
               <Navbar />
               <div>
@@ -65,7 +82,7 @@ export default function RootLayout({ children }) {
               </div>
               <Footer />
             </AuthProvider>
-            
+
           </>
         )}
       </body>
