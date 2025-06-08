@@ -8,6 +8,7 @@ import AuthProvider from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Script from "next/script";
+import Head from "next/head";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,15 +33,14 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <head>
-        <meta name="google-adsense-account" content="ca-pub-7987554086610229"></meta>
-        <Script
+     <Head>
+        <meta name="google-adsense-account" content="ca-pub-7987554086610229" />
+        <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7987554086610229"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
-      </head>
+        ></script>
+      </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${loading ? "overflow-hidden" : ""
           }`}
