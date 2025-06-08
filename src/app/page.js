@@ -217,7 +217,7 @@ const HomePage = () => {
                   cherished and held in God’s hands.
                 </p>
               </div>
-              <button className="mt-4 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-sm font-semibold py-2 px-5 rounded-full shadow-md hover:shadow-lg transition duration-300 self-start">
+              <button className="mt-4 cursor-pointer bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-sm font-semibold py-2 px-5 rounded-full shadow-md hover:shadow-lg transition duration-300 self-start">
                 View on Amazon
               </button>
             </div>
