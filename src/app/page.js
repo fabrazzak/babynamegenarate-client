@@ -60,7 +60,7 @@ const HomePage = () => {
     fetchRandomName();
   }, [fetchRandomName]);
 
-  
+
 
 
 
@@ -171,6 +171,59 @@ const HomePage = () => {
           <p className="text-gray-500 text-sm mb-2">Advertisement</p>
           <AdBanner></AdBanner>
         </motion.div>
+
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="mt-12 p-6 bg-gradient-to-br from-purple-50 to-white rounded-2xl shadow-xl border border-purple-200"
+        >
+          <h3 className="text-xl font-bold text-purple-800 mb-4 relative">
+            {/* Affiliate Pick */}
+            <span className="absolute -top-2  -right-4 text-xs  bg-purple-600 text-white px-2 py-0.5 rounded-full shadow">
+              ✨ Featured
+            </span>
+          </h3>
+
+          <a
+            href="https://amzn.to/4mNQj6n"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+            className="flex flex-col md:flex-row items-stretch gap-6 group transition-all duration-300"
+          >
+            {/* Left Side Image - 50% width on md and above */}
+            <div className="w-full md:w-1/2 relative overflow-hidden rounded-xl shadow-lg">
+              <img
+                src="https://m.media-amazon.com/images/I/714bmc4GPCL._AC_SX679_.jpg"
+                alt="Child of God Muslin Swaddle Blanket"
+                className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+              />
+              <span className="absolute bottom-2 left-2 bg-white/80 text-purple-700 text-xs px-2 py-0.5 rounded shadow">
+                Best Seller
+              </span>
+            </div>
+
+            {/* Right Side Content - 50% width on md and above */}
+            <div className="w-full md:w-1/2 flex flex-col justify-between pt-4">
+              <div>
+                <p className="text-gray-800 text-base font-medium mb-2 leading-snug">
+                  Wrap your baby in comfort and prayer with the
+                  <span className="font-semibold text-purple-700"> Child of God Muslin Swaddle Blanket</span>.
+                </p>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Each time you swaddle your baby, may it be a quiet moment of blessing—a prayer for peace,
+                  protection, and grace over their life. Let this soft blanket be a reminder they are
+                  cherished and held in God’s hands.
+                </p>
+              </div>
+              <button className="mt-4 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-sm font-semibold py-2 px-5 rounded-full shadow-md hover:shadow-lg transition duration-300 self-start">
+                View on Amazon
+              </button>
+            </div>
+          </a>
+        </motion.div>
+
       </div>
     </div>
   );
