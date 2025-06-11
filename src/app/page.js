@@ -40,7 +40,7 @@ const HomePage = () => {
   const [name, setName] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [affiliates, setAffiliates] = useState([]);
+  const [affiliates, setAffiliates] = useState({});
 
   const fetchRandomName = useCallback(async () => {
     setLoading(true);
@@ -62,11 +62,9 @@ const HomePage = () => {
     setLoading(true)
     try {
       const res = await axios.get('https://babynamegenarate.vercel.app/affiliates');
-      const activeAffilateData = [...res.data].filter(a => a.status == true)
-      setAffiliates(activeAffilateData);
+      const activeAffilateData = res.data.filter(a => a.status == true)
+      setAffiliates(activeAffilateData[0]);
       setLoading(false)
-
-      console.log(activeAffilateData[0], "abd")
     } catch (err) {
       console.error('Error fetching affiliates:', err);
       MySwal.fire('Error', 'Failed to fetch affiliates', 'error');
@@ -228,11 +226,11 @@ if(loading){
             {/* Right Side Content - 50% width on md and above */}
             <div className="w-full md:w-1/2 flex flex-col justify-between pt-4">
               <div>
-                <p className="text-gray-800 text-base font-medium mb-2 leading-snug">
+                <p className="text-gray-800 text-base font-medium mb-2 leading-snug text-left">
 
                   <span className="font-semibold text-purple-700"> {affiliates?.title}</span>.
                 </p>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <p className="text-gray-600 text-sm leading-relaxed text-left">
                   {
                     affiliates?.description
                   }
