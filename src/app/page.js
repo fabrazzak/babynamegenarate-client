@@ -78,9 +78,6 @@ const HomePage = () => {
 
 
 
-if(loading){
-  return  <LoadingSpinner></LoadingSpinner>;
-}
 
 
 
