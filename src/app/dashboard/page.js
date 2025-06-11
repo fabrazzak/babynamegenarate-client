@@ -9,6 +9,7 @@ import withReactContent from 'sweetalert2-react-content';
 import { useAuth } from '@/context/AuthContext';
 import { GrAdd } from "react-icons/gr";
 import { ImManWoman } from "react-icons/im";
+import { TbAffiliate } from "react-icons/tb";
 
 const MySwal = withReactContent(Swal);
 
@@ -19,7 +20,11 @@ const DashBoardPage = () => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [currentName, setCurrentName] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { user, loading, role,setLoading } = useAuth();
+  const { user, loading, role, setLoading } = useAuth();
+  const [affiliates, setAffiliates] = useState([]);
+  const [isAddingAffiliate, setIsAddingAffiliate] = useState(false);
+  const [currentAffiliate, setCurrentAffiliate] = useState(null);
+
 
   const fetchNames = async () => {
     try {
@@ -41,12 +46,26 @@ const DashBoardPage = () => {
     }
   };
 
+
+  const fetchAffiliates = async () => {
+    try {
+      const res = await axios.get('https://babynamegenarate.vercel.app/affiliates');
+      setAffiliates(res.data);
+    } catch (err) {
+      console.error('Error fetching affiliates:', err);
+      MySwal.fire('Error', 'Failed to fetch affiliates', 'error');
+    }
+  };
+
   useEffect(() => {
     if (selectedMenu === 'all-names') {
       fetchNames();
     }
     if (selectedMenu === 'all-users') {
       fetchUsers();
+    }
+    if (selectedMenu === 'affiliate') {
+      fetchAffiliates();
     }
   }, [selectedMenu]);
 
@@ -57,7 +76,7 @@ const DashBoardPage = () => {
         <p>Type the name <strong>${name}</strong> to confirm deletion:</p>
       `,
       input: 'text',
-      inputPlaceholder: 'Type the name here', 
+      inputPlaceholder: 'Type the name here',
       inputAttributes: {
         autocapitalize: 'off'
       },
@@ -131,12 +150,37 @@ const DashBoardPage = () => {
     }
   };
 
+
+  const handleDeleteAffiliate = async (id, title) => {
+    const { isConfirmed } = await MySwal.fire({
+      title: 'Confirm Deletion',
+      html: `Are you sure you want to delete <strong>${title}</strong>?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (isConfirmed) {
+      try {
+        await axios.delete(`https://babynamegenarate.vercel.app/affiliates/${id}`);
+        setAffiliates(prev => prev.filter(item => item._id !== id));
+        MySwal.fire('Deleted!', 'The affiliate has been deleted.', 'success');
+      } catch (err) {
+        console.error(err);
+        MySwal.fire('Error', 'Failed to delete the affiliate.', 'error');
+      }
+    }
+  };
+
+
   const openUpdateModal = (name) => {
     setCurrentName(name);
     setIsUpdateModalOpen(true);
     updateFormik.setValues({
       name: name.name,
-      meaning: name.meaning,   
+      meaning: name.meaning,
       scripture: name.scripture || '',
       theme: name.theme || ''
     });
@@ -148,15 +192,46 @@ const DashBoardPage = () => {
     updateFormik.resetForm();
   };
 
+ const startAddingAffiliate = () => {
+    setCurrentAffiliate(null);
+    setIsAddingAffiliate(true);
+    affiliateFormik.resetForm();
+  };
+
+
+  const startEditingAffiliate = (affiliate) => {
+    setCurrentAffiliate(affiliate);
+    setIsAddingAffiliate(true);
+    affiliateFormik.setValues({
+      title: affiliate.title,
+      imageLink: affiliate.imageLink,
+      productLink: affiliate.productLink,
+      description: affiliate.description
+    });
+  }; 
+  
+  const activeAffiliate = async(affiliate) => {
+     await axios.put(`https://babynamegenarate.vercel.app/affiliates/active/${affiliate._id}`, {value:""});
+          MySwal.fire('Success!', 'Affiliate active successfully!', 'success');
+  };
+
+
+  const cancelAffiliateForm = () => {
+    setIsAddingAffiliate(false);
+    setCurrentAffiliate(null);
+    affiliateFormik.resetForm();
+  };
+
+
   const formik = useFormik({
     initialValues: {
       name: '',
-      meaning: '',   
+      meaning: '',
       scripture: '',
       theme: ''
     },
     validationSchema: Yup.object({
-      name: Yup.string().required('Name is required'),    
+      name: Yup.string().required('Name is required'),
       meaning: Yup.string().required('Meaning is required'),
       scripture: Yup.string(),
       theme: Yup.string()
@@ -176,13 +251,13 @@ const DashBoardPage = () => {
   const updateFormik = useFormik({
     initialValues: {
       name: '',
-      meaning: '',     
+      meaning: '',
       scripture: '',
       theme: ''
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Name is required'),
-      meaning: Yup.string().required('Meaning is required'),    
+      meaning: Yup.string().required('Meaning is required'),
       scripture: Yup.string(),
       theme: Yup.string()
     }),
@@ -199,6 +274,43 @@ const DashBoardPage = () => {
     },
   });
 
+
+
+
+
+  const affiliateFormik = useFormik({
+    initialValues: {
+      title: '',
+      imageLink: '',
+      productLink: '',
+      description: ''
+    },
+    validationSchema: Yup.object({
+      title: Yup.string().required('Title is required'),
+      imageLink: Yup.string().url('Must be a valid URL').required('Image link is required'),
+      productLink: Yup.string().url('Must be a valid URL').required('Product link is required'),
+      description: Yup.string().required('Description is required')
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        if (currentAffiliate) {
+          await axios.put(`https://babynamegenarate.vercel.app/affiliates/${currentAffiliate._id}`, values);
+          MySwal.fire('Success!', 'Affiliate updated successfully!', 'success');
+        } else {
+          await axios.post('https://babynamegenarate.vercel.app/affiliates', values);
+          MySwal.fire('Success!', 'Affiliate added successfully!', 'success');
+        }
+        fetchAffiliates();
+        cancelAffiliateForm();
+      } catch (error) {
+        console.error('Error submitting affiliate:', error);
+        MySwal.fire('Error!', 'Failed to submit affiliate', 'error');
+      }
+    }
+  });
+
+
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -210,7 +322,7 @@ const DashBoardPage = () => {
     <PrivateRoute>
       <div className="flex flex-col md:flex-row min-h-screen">
         {/* Mobile Menu Button */}
-        <button 
+        <button
           className="md:hidden fixed top-20 right-4 z-50 bg-purple-500 text-white p-2 px-3 rounded-md shadow-lg"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         >
@@ -227,11 +339,10 @@ const DashBoardPage = () => {
                   setSelectedMenu('add-name');
                   setIsSidebarOpen(false);
                 }}
-                className={`w-full text-left px-4 py-2 rounded-md transition  flex  items-center ${
-                  selectedMenu === 'add-name'
-                    ? 'bg-purple-500 text-white font-semibold'
-                    : 'hover:bg-purple-200 text-purple-800'
-                }`}
+                className={`w-full text-left px-4 py-2 rounded-md transition  flex  items-center ${selectedMenu === 'add-name'
+                  ? 'bg-purple-500 text-white font-semibold'
+                  : 'hover:bg-purple-200 text-purple-800'
+                  }`}
               >
                 <GrAdd className='text-xl mr-2' /> Add Name
               </button>
@@ -242,11 +353,10 @@ const DashBoardPage = () => {
                   setSelectedMenu('all-names');
                   setIsSidebarOpen(false);
                 }}
-                className={`w-full text-left px-4 py-2 rounded-md transition ${
-                  selectedMenu === 'all-names'
-                    ? 'bg-purple-500 text-white font-semibold'
-                    : 'hover:bg-purple-200 text-purple-800'
-                }`}
+                className={`w-full text-left px-4 py-2 rounded-md transition ${selectedMenu === 'all-names'
+                  ? 'bg-purple-500 text-white font-semibold'
+                  : 'hover:bg-purple-200 text-purple-800'
+                  }`}
               >
                 📋 All Names
               </button>
@@ -257,13 +367,26 @@ const DashBoardPage = () => {
                   setSelectedMenu('all-users');
                   setIsSidebarOpen(false);
                 }}
-                className={`w-full text-left px-4 py-2 rounded-md transition flex ${
-                  selectedMenu === 'all-users'
-                    ? 'bg-purple-500 text-white font-semibold'
-                    : 'hover:bg-purple-200 text-purple-800'
-                }`}
+                className={`w-full text-left px-4 py-2 rounded-md transition flex ${selectedMenu === 'all-users'
+                  ? 'bg-purple-500 text-white font-semibold'
+                  : 'hover:bg-purple-200 text-purple-800'
+                  }`}
               >
                 <ImManWoman className='text-xl mr-2' /> All Users
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => {
+                  setSelectedMenu('affiliate');
+                  setIsSidebarOpen(false);
+                }}
+                className={`w-full text-left px-4 py-2 rounded-md transition flex ${selectedMenu === 'affiliate'
+                  ? 'bg-purple-500 text-white font-semibold'
+                  : 'hover:bg-purple-200 text-purple-800'
+                  }`}
+              >
+                <TbAffiliate className='text-xl mr-2' /> Affiliate
               </button>
             </li>
           </ul>
@@ -344,7 +467,7 @@ const DashBoardPage = () => {
                     <tr>
                       <th className="py-3 px-2 md:px-4">SL No</th>
                       <th className="py-3 px-2 md:px-4">Name</th>
-                      <th className="py-3 px-2 md:px-4">Meaning</th>               
+                      <th className="py-3 px-2 md:px-4">Meaning</th>
                       <th className="py-3 px-2 md:px-4 hidden sm:table-cell">Scripture</th>
                       <th className="py-3 px-2 md:px-4 hidden sm:table-cell">Theme</th>
                       <th className="py-3 px-2 md:px-4">Actions</th>
@@ -355,7 +478,7 @@ const DashBoardPage = () => {
                       <tr key={item._id} className={index % 2 === 0 ? 'bg-gray-50' : ''}>
                         <td className="py-2 px-2 md:px-4">{index + 1}</td>
                         <td className="py-2 px-2 md:px-4">{item.name}</td>
-                        <td className="py-2 px-2 md:px-4">{item.meaning}</td>                     
+                        <td className="py-2 px-2 md:px-4">{item.meaning}</td>
                         <td className="py-2 px-2 md:px-4 hidden sm:table-cell">{item.scripture || '-'}</td>
                         <td className="py-2 px-2 md:px-4 hidden sm:table-cell">{item.theme || '-'}</td>
                         <td className="py-2 px-2 md:px-4 space-x-1 md:space-x-2">
@@ -435,9 +558,324 @@ const DashBoardPage = () => {
                         </td>
                       </tr>
                     )}
+
+                    {selectedMenu === 'affiliate' && (
+                      <div className="w-full">
+                        {isAddingAffiliate ? (
+                          <div className="bg-white p-6 rounded-xl shadow-md mb-6">
+                            <h2 className="text-2xl font-bold mb-4 text-purple-700">
+                              {currentAffiliate ? 'Edit Affiliate Product' : 'Add New Affiliate Product'}
+                            </h2>
+                            <form onSubmit={affiliateFormik.handleSubmit} className="space-y-4">
+                              <div>
+                                <label className="block text-gray-700 mb-1">Title*</label>
+                                <input
+                                  type="text"
+                                  name="title"
+                                  placeholder="Product Title"
+                                  onChange={affiliateFormik.handleChange}
+                                  onBlur={affiliateFormik.handleBlur}
+                                  value={affiliateFormik.values.title}
+                                  className="w-full px-4 py-2 border rounded focus:outline-purple-400"
+                                />
+                                {affiliateFormik.touched.title && affiliateFormik.errors.title && (
+                                  <p className="text-red-500 text-sm">{affiliateFormik.errors.title}</p>
+                                )}
+                              </div>
+
+                              <div>
+                                <label className="block text-gray-700 mb-1">Image Link (URL)*</label>
+                                <input
+                                  type="url"
+                                  name="imageLink"
+                                  placeholder="https://example.com/image.jpg"
+                                  onChange={affiliateFormik.handleChange}
+                                  onBlur={affiliateFormik.handleBlur}
+                                  value={affiliateFormik.values.imageLink}
+                                  className="w-full px-4 py-2 border rounded focus:outline-purple-400"
+                                />
+                                {affiliateFormik.touched.imageLink && affiliateFormik.errors.imageLink && (
+                                  <p className="text-red-500 text-sm">{affiliateFormik.errors.imageLink}</p>
+                                )}
+                              </div>
+
+                              <div>
+                                <label className="block text-gray-700 mb-1">Product Link (URL)*</label>
+                                <input
+                                  type="url"
+                                  name="productLink"
+                                  placeholder="https://example.com/product"
+                                  onChange={affiliateFormik.handleChange}
+                                  onBlur={affiliateFormik.handleBlur}
+                                  value={affiliateFormik.values.productLink}
+                                  className="w-full px-4 py-2 border rounded focus:outline-purple-400"
+                                />
+                                {affiliateFormik.touched.productLink && affiliateFormik.errors.productLink && (
+                                  <p className="text-red-500 text-sm">{affiliateFormik.errors.productLink}</p>
+                                )}
+                              </div>
+
+                              <div>
+                                <label className="block text-gray-700 mb-1">Description*</label>
+                                <textarea
+                                  name="description"
+                                  placeholder="Product description..."
+                                  onChange={affiliateFormik.handleChange}
+                                  onBlur={affiliateFormik.handleBlur}
+                                  value={affiliateFormik.values.description}
+                                  rows="5"
+                                  className="w-full px-4 py-2 border rounded focus:outline-purple-400"
+                                />
+                                {affiliateFormik.touched.description && affiliateFormik.errors.description && (
+                                  <p className="text-red-500 text-sm">{affiliateFormik.errors.description}</p>
+                                )}
+                              </div>
+
+                              <div className="flex space-x-4">
+                                <button
+                                  type="submit"
+                                  className="flex-1 bg-purple-600 text-white py-2 rounded hover:bg-purple-700 transition"
+                                >
+                                  {currentAffiliate ? 'Update' : 'Submit'}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={cancelAffiliateForm}
+                                  className="flex-1 bg-gray-500 text-white py-2 rounded hover:bg-gray-600 transition"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </form>
+                          </div>
+                        ) : (
+                          <div className="overflow-x-auto">
+                            <div className="flex justify-between items-center mb-4">
+                              <h2 className="text-2xl font-bold text-purple-700">Affiliate Products</h2>
+                              <button
+                                onClick={startAddingAffiliate}
+                                className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition"
+                              >
+                                Add New Affiliate
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                              {affiliates.length > 0 ? (
+                                affiliates.map((item) => (
+                                  <div key={item._id} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+                                    <div className="h-48 overflow-hidden">
+                                      <img
+                                        src={item.imageLink}
+                                        alt={item.title}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                          e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Available';
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="p-4">
+                                      <h3 className="text-lg font-semibold mb-2 text-purple-700">{item.title}</h3>
+                                      <p className="text-gray-600 mb-4 line-clamp-3">{item.description}</p>
+                                      <div className="flex space-x-2">
+                                        <a
+                                          href={item.productLink}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex-1 bg-purple-600 text-white text-center py-2 rounded hover:bg-purple-700 transition"
+                                        >
+                                          View Product
+                                        </a>
+                                        <button
+                                          onClick={() => startEditingAffiliate(item)}
+                                          className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition"
+                                        >
+                                          Edit
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteAffiliate(item._id, item.title)}
+                                          className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition"
+                                        >
+                                          Delete
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="col-span-full text-center py-8 text-gray-500">
+                                  No affiliate products found. Click "Add New Affiliate" to create one.
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </tbody>
                 </table>
               </div>
+            </div>
+          )}
+
+
+          {/* // Add this in the main return section, with other menu content */}
+          {selectedMenu === 'affiliate' && (
+            <div className="w-full">
+              {isAddingAffiliate ? (
+                <div className="bg-white p-6 rounded-xl shadow-md mb-6">
+                  <h2 className="text-2xl font-bold mb-4 text-purple-700">
+                    {currentAffiliate ? 'Edit Affiliate Product' : 'Add New Affiliate Product'}
+                  </h2>
+                  <form onSubmit={affiliateFormik.handleSubmit} className="space-y-4">
+                    <div>
+                      <label className="block text-gray-700 mb-1">Title*</label>
+                      <input
+                        type="text"
+                        name="title"
+                        placeholder="Product Title"
+                        onChange={affiliateFormik.handleChange}
+                        onBlur={affiliateFormik.handleBlur}
+                        value={affiliateFormik.values.title}
+                        className="w-full px-4 py-2 border rounded focus:outline-purple-400"
+                      />
+                      {affiliateFormik.touched.title && affiliateFormik.errors.title && (
+                        <p className="text-red-500 text-sm">{affiliateFormik.errors.title}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 mb-1">Image Link (URL)*</label>
+                      <input
+                        type="url"
+                        name="imageLink"
+                        placeholder="https://example.com/image.jpg"
+                        onChange={affiliateFormik.handleChange}
+                        onBlur={affiliateFormik.handleBlur}
+                        value={affiliateFormik.values.imageLink}
+                        className="w-full px-4 py-2 border rounded focus:outline-purple-400"
+                      />
+                      {affiliateFormik.touched.imageLink && affiliateFormik.errors.imageLink && (
+                        <p className="text-red-500 text-sm">{affiliateFormik.errors.imageLink}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 mb-1">Product Link (URL)*</label>
+                      <input
+                        type="url"
+                        name="productLink"
+                        placeholder="https://example.com/product"
+                        onChange={affiliateFormik.handleChange}
+                        onBlur={affiliateFormik.handleBlur}
+                        value={affiliateFormik.values.productLink}
+                        className="w-full px-4 py-2 border rounded focus:outline-purple-400"
+                      />
+                      {affiliateFormik.touched.productLink && affiliateFormik.errors.productLink && (
+                        <p className="text-red-500 text-sm">{affiliateFormik.errors.productLink}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 mb-1">Description*</label>
+                      <textarea
+                        name="description"
+                        placeholder="Product description..."
+                        onChange={affiliateFormik.handleChange}
+                        onBlur={affiliateFormik.handleBlur}
+                        value={affiliateFormik.values.description}
+                        rows="5"
+                        className="w-full px-4 py-2 border rounded focus:outline-purple-400"
+                      />
+                      {affiliateFormik.touched.description && affiliateFormik.errors.description && (
+                        <p className="text-red-500 text-sm">{affiliateFormik.errors.description}</p>
+                      )}
+                    </div>
+
+                    <div className="flex space-x-4">
+                      <button
+                        type="submit"
+                        className="flex-1 bg-purple-600 text-white py-2 rounded hover:bg-purple-700 transition"
+                      >
+                        {currentAffiliate ? 'Update' : 'Submit'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={cancelAffiliateForm}
+                        className="flex-1 bg-gray-500 text-white py-2 rounded hover:bg-gray-600 transition"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-bold text-purple-700">Affiliate Products</h2>
+                    <button
+                      onClick={startAddingAffiliate}
+                      className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition"
+                    >
+                      Add New Affiliate
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                    {affiliates.length > 0 ? (
+                      affiliates.map((item) => (
+                        <div key={item._id} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+                          <div className="h-48 overflow-hidden">
+                            <img
+                              src={item.imageLink}
+                              alt={item.title}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Available';
+                              }}
+                            />
+                          </div>
+                          <div className="p-4">
+                            <h3 className="text-lg font-semibold mb-2 text-purple-700">{item.title}</h3>
+                            <p className="text-gray-600 mb-4 line-clamp-3">{item.description}</p>
+                            <div className="flex space-x-2">
+                              <a
+                                href={item.productLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 bg-purple-600 text-white text-center py-2 rounded hover:bg-purple-700 transition"
+                              >
+                                View Product
+                              </a>
+                              <button
+                                onClick={() => activeAffiliate(item)}
+                                className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition"
+                              >
+                                {item.status ?  "Active": "MakeActive"}
+                               
+                              </button>
+                              <button
+                                onClick={() => startEditingAffiliate(item)}
+                                className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteAffiliate(item._id, item.title)}
+                                className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="col-span-full text-center py-8 text-gray-500">
+                        No affiliate products found. Click "Add New Affiliate" to create one.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </main>
@@ -475,8 +913,8 @@ const DashBoardPage = () => {
                   {updateFormik.touched.meaning && updateFormik.errors.meaning && (
                     <p className="text-red-500 text-sm">{updateFormik.errors.meaning}</p>
                   )}
-                </div>              
-                
+                </div>
+
                 <div>
                   <input
                     type="text"

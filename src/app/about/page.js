@@ -19,7 +19,7 @@ const AboutPage = () => {
           </h2>
           <div className="h-1 w-24 bg-blue-600 mx-auto rounded"></div>
           <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
-            Names are more than identity — they’re a calling, a blessing, and a declaration of purpose.
+            Names are more than identity — they're a calling, a blessing, and a declaration of purpose.
           </p>
         </motion.div>
 
@@ -59,6 +59,30 @@ const AboutPage = () => {
             </p>
           </motion.div>
         </div>
+
+        {/* Connect With Us Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="max-w-2xl mx-auto mt-16 bg-white p-8 rounded-2xl shadow text-center"
+        >
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+            Connect With Us
+          </h3>
+          <p className="text-gray-700 mb-6">
+            Follow us on Instagram <a href="https://instagram.com/BabyNameBlessing" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 font-medium">@BabyNameBlessing</a> for daily name inspiration, nursery ideas, and faith-filled encouragement.
+          </p>
+          <a 
+            href="https://instagram.com/BabyNameBlessing" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-lg hover:opacity-90 transition"
+          >
+            Follow on Instagram
+          </a>
+        </motion.div>
       </div>
     </section>
   );

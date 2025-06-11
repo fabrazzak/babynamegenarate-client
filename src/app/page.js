@@ -40,6 +40,7 @@ const HomePage = () => {
   const [name, setName] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [affiliates, setAffiliates] = useState([]);
 
   const fetchRandomName = useCallback(async () => {
     setLoading(true);
@@ -56,12 +57,32 @@ const HomePage = () => {
     }
   }, []);
 
+
+  const fetchAffiliates = async () => {
+    setLoading(true)
+    try {
+      const res = await axios.get('https://babynamegenarate.vercel.app/affiliates');
+      const activeAffilateData = [...res.data].filter(a => a.status == true)
+      setAffiliates(activeAffilateData);
+      setLoading(false)
+
+      console.log(activeAffilateData[0], "abd")
+    } catch (err) {
+      console.error('Error fetching affiliates:', err);
+      MySwal.fire('Error', 'Failed to fetch affiliates', 'error');
+    }
+  };
+
   useEffect(() => {
     fetchRandomName();
+    fetchAffiliates();
   }, [fetchRandomName]);
 
 
 
+if(loading){
+  return  <LoadingSpinner></LoadingSpinner>;
+}
 
 
 
@@ -72,7 +93,7 @@ const HomePage = () => {
           className="md:text-4xl text-2xl font-extrabold mb-4 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600"
           {...fadeIn}
         >
-          Beautiful Baby Names
+          Faith Inspired Baby Names
         </motion.h1>
 
         <motion.p
@@ -80,7 +101,7 @@ const HomePage = () => {
           {...fadeIn}
           transition={{ delay: 0.1, duration: 0.6 }}
         >
-          Find perfect names with meaning and theme
+          Discover the perfect baby name with deep meaning, a Bible verse, and a spiritual theme.
         </motion.p>
 
         <AnimatePresence mode="wait">
@@ -155,7 +176,7 @@ const HomePage = () => {
           >
             <span className="relative z-10 flex items-center justify-center">
               <>
-                Generate New Name
+                Find Another Blessed Name
 
               </>
             </span>
@@ -187,7 +208,7 @@ const HomePage = () => {
           </h3>
 
           <a
-            href="https://amzn.to/4mNQj6n"
+            href={affiliates.productLink}
             target="_blank"
             rel="nofollow noopener noreferrer"
             className="flex flex-col md:flex-row items-stretch gap-6 group transition-all duration-300"
@@ -195,7 +216,7 @@ const HomePage = () => {
             {/* Left Side Image - 50% width on md and above */}
             <div className="w-full md:w-1/2 relative overflow-hidden rounded-xl shadow-lg">
               <img
-                src="https://m.media-amazon.com/images/I/714bmc4GPCL._AC_SX679_.jpg"
+                src={affiliates?.imageLink}
                 alt="Child of God Muslin Swaddle Blanket"
                 className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
               />
@@ -208,13 +229,13 @@ const HomePage = () => {
             <div className="w-full md:w-1/2 flex flex-col justify-between pt-4">
               <div>
                 <p className="text-gray-800 text-base font-medium mb-2 leading-snug">
-                  Wrap your baby in comfort and prayer with the
-                  <span className="font-semibold text-purple-700"> Child of God Muslin Swaddle Blanket</span>.
+
+                  <span className="font-semibold text-purple-700"> {affiliates?.title}</span>.
                 </p>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  Each time you swaddle your baby, may it be a quiet moment of blessing—a prayer for peace,
-                  protection, and grace over their life. Let this soft blanket be a reminder they are
-                  cherished and held in God’s hands.
+                  {
+                    affiliates?.description
+                  }
                 </p>
               </div>
               <button className="mt-4 cursor-pointer bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white text-sm font-semibold py-2 px-5 rounded-full shadow-md hover:shadow-lg transition duration-300 self-start">
